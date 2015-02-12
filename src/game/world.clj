@@ -8,7 +8,7 @@
 
 (def next_id (fn [world]
   (let [id (inc (:max_id world))]
-    [(assoc world :max_id id) id])
+    (list (assoc world :max_id id) id))
   ))
 
 (def add_obj (fn [world obj]
@@ -20,3 +20,13 @@
   (let [objects (dissoc (:objects world) (:id obj))]
     (assoc world :objects objects))
   ))
+
+(def _world (ref (->world 0 {})))
+
+(defmacro with_world [func & args]
+  `(let [w# @_world,
+    new_l# (~func w# ~@args),
+    [new_w# & ret#] (if-not (list? new_l#) (list new_l#) new_l#)]
+    (dosync (ref-set _world new_w#))
+    (if (and (coll? ret#) (< (count ret#) 2)) (first ret#) ret#))
+  )
