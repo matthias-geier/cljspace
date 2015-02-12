@@ -28,5 +28,5 @@
     new_l# (~func w# ~@args),
     [new_w# & ret#] (if-not (list? new_l#) (list new_l#) new_l#)]
     (dosync (ref-set _world new_w#))
-    (if (and (coll? ret#) (< (count ret#) 2)) (first ret#) ret#))
+    (if (< (count ret#) 2) (first ret#) ret#))
   )
