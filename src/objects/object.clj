@@ -4,11 +4,11 @@
 
 (defrecord obj [id name size wgt mass qty caps])
 
-(def ship (fn [world args]
-  (let [[world next_id] (game.world/next_id world),
+(def ship (fn [args]
+  (let [next_id (game.world/with_world game.world/next_id),
     caps [(->ftl)],
     args (merge args {:id next_id, :caps caps}),
     ship_obj (map->obj args)]
 
-    [(game.world/add_obj world ship_obj) ship_obj])
+    (game.world/with_world game.world/add_obj ship_obj))
   ))
