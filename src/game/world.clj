@@ -23,10 +23,11 @@
 
 (def _world (ref (->world 0 {})))
 
-(defmacro with_world [func & args]
-  `(let [w# @_world,
-    new_l# (~func w# ~@args),
-    [new_w# & ret#] (if-not (list? new_l#) (list new_l#) new_l#)]
-    (dosync (ref-set _world new_w#))
-    (if (< (count ret#) 2) (first ret#) ret#))
-  )
+(def with_world (fn [func & args]
+  (let [w @_world,
+    result (apply func w args),
+    [new_world & ret] (if-not (list? result) (list result) result)]
+
+    (dosync (ref-set _world new_world))
+    (if (< (count ret) 2) (first ret) ret))
+  ))

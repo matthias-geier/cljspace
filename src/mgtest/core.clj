@@ -14,5 +14,6 @@
     (println (game.world/by_id world 1))
     (let [world (game.world/del_obj world ship)]
       (println world)))
-  (print (game.world/with_world l))
+  (println (game.world/with_world l))
+  (println (game.world/with_world l))
   ))
