@@ -4,7 +4,8 @@
   (by_id [this id]))
 
 (defrecord world [max_id objects]
-  obj_fns (by_id [this id] (get (:objects this) id)))
+  obj_fns
+    (by_id [this id] (get (:objects this) id)))
 
 (def _world (ref (->world 0 {})))
 
