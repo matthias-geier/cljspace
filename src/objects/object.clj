@@ -1,14 +1,30 @@
 (ns objects.object
-  (:require [game.world])
-  (:use [objects.ftl]))
+  (:use [compojure.response :only [Renderable]])
+  (:use [ring.util.response :only [response]])
+  (:use [game.world :only [add] :rename { add world-add }])
+  (:use [cljspace.util :only [rec-to-map rec-utils]])
+  (:use [objects.ftl])
+  (:use [objects.mineable])
+  (:use [cheshire.generate :only [add-encoder encode-map]]))
 
-(defrecord obj [id name size wgt mass qty caps])
+(defrecord obj [id name size wgt mass qty caps]
+  Renderable
+    (render [this req] (response (rec-to-map this)))
+  rec-utils
+    (rec-name [this] "obj")
+    (cap-by-type [this cap] (first (filter (fn [c] (instance? cap c)) caps)))
+  )
+
+(add-encoder obj (fn [o jg]
+  (encode-map (rec-to-map o) jg)
+  ))
 
 (def ship (fn [args]
-  (let [next_id (game.world/with_world game.world/next_id),
-    caps [(->ftl)],
-    args (merge args {:id next_id, :caps caps}),
-    ship_obj (map->obj args)]
+  (let [ship_obj (map->obj (assoc args :caps [(->ftl)]))]
+    (world-add ship_obj))
+  ))
 
-    (game.world/with_world game.world/add_obj ship_obj))
+(def asteroid (fn [args]
+  (let [ast_obj (map->obj (assoc args :caps [(map->mineable args)]))]
+    (world-add ast_obj))
   ))
