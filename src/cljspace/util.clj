@@ -12,13 +12,16 @@
   ))
 
 (def rec-fields (fn [rec]
-  (. (. (type rec) getMethod "getBasis" nil) invoke nil nil)
+  (map keyword (. (. (type rec) getMethod "getBasis" nil) invoke nil nil))
   ))
 
 (def rec-to-map (fn [rec]
-  (let [fields (map keyword (rec-fields rec))]
-    (reduce
-      (fn [acc field] (assoc acc field (field rec)))
-      { :rec-type (rec-name rec) }
-      (reverse fields)))
+  (reduce
+    (fn [acc field] (assoc acc field (field rec)))
+    { :rec-type (rec-name rec) }
+    (reverse (rec-fields rec)))
+  ))
+
+(def map-into-rec (fn [rec args]
+  (reduce (fn [acc field] (assoc acc field (field args))) rec (rec-fields rec))
   ))

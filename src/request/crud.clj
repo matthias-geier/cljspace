@@ -1,6 +1,8 @@
 (ns request.crud
   (:use [game.world :only [from by-id] :rename { from from-world }])
   (:use [request.sanity])
+  (:use [game.event :only [add] :rename { add add-event }])
+  (:require [game.event :only [get-timestamp]])
   (:require [objects.object :as object :only [ship asteroid]])
   (:use [cljspace.util :only [sanitize-args]]))
 
@@ -22,6 +24,9 @@
   ))
 
 (def mine-event (fn [mobj tobj res]
+  (add-event (:id mobj) { :obj mobj :target tobj :resource res }
+    (+ (game.event/get-timestamp) 10)
+    (fn [e] ) (fn [e] ))
   (println "mine event" mobj tobj res)
   ))
 

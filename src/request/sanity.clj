@@ -3,6 +3,8 @@
   (:use [cljspace.util :only [rec-to-map cap-by-type]])
   (:use [objects.mineable])
   (:import [objects.mineable mineable])
+  (:use [objects.cargo])
+  (:import [objects.cargo cargo])
   (:use [game.world :only [from by-id] :rename { from from-world }]))
 
 (def id-missing? (fn [id]
@@ -11,7 +13,11 @@
   ))
 
 (def has-cargo? (fn [obj]
-  (println "has cargo" obj)
+  (let [cap (cap-by-type obj cargo)]
+    (if (or (nil? cap) (<= (qty-free cap) 0))
+      (response { :status false
+        :error (str "object id: " (:id obj) " lacks cargo space") }))
+    )
   ))
 
 (def has-mine-resource? (fn [obj resource]
